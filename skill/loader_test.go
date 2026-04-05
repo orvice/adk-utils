@@ -94,9 +94,9 @@ func TestLoadSkillDir_Empty(t *testing.T) {
 
 func TestParseFrontmatter(t *testing.T) {
 	content := "---\nname: test-skill\ndescription: A test\n---\n# Body\nHello"
-	fm, body, err := parseFrontmatter(content)
+	fm, body, err := ParseFrontmatter(content)
 	if err != nil {
-		t.Fatalf("parseFrontmatter: %v", err)
+		t.Fatalf("ParseFrontmatter: %v", err)
 	}
 	if fm.Name != "test-skill" {
 		t.Errorf("Name = %q, want %q", fm.Name, "test-skill")
@@ -107,9 +107,31 @@ func TestParseFrontmatter(t *testing.T) {
 }
 
 func TestParseFrontmatter_MissingDelimiter(t *testing.T) {
-	_, _, err := parseFrontmatter("no frontmatter here")
+	_, _, err := ParseFrontmatter("no frontmatter here")
 	if err == nil {
 		t.Fatal("expected error for missing frontmatter")
+	}
+}
+
+func TestFSLoader_AsInterface(t *testing.T) {
+	var loader Loader = NewFSLoader("testdata")
+
+	// LoadSkill via interface
+	s, err := loader.LoadSkill("testdata/weather-skill")
+	if err != nil {
+		t.Fatalf("LoadSkill: %v", err)
+	}
+	if s.Name() != "weather-skill" {
+		t.Errorf("Name = %q, want %q", s.Name(), "weather-skill")
+	}
+
+	// LoadAll via interface
+	skills, err := loader.LoadAll()
+	if err != nil {
+		t.Fatalf("LoadAll: %v", err)
+	}
+	if len(skills) != 2 {
+		t.Fatalf("expected 2 skills, got %d", len(skills))
 	}
 }
 

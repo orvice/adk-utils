@@ -88,3 +88,14 @@ func (s *Skill) Name() string {
 func (s *Skill) Description() string {
 	return s.Frontmatter.Description
 }
+
+// Loader loads skills from a backend (filesystem, database, remote API, etc.).
+type Loader interface {
+	// LoadSkill loads a single skill identified by the given location string.
+	// The interpretation of location is implementation-specific:
+	// a directory path, a URL, a database key, etc.
+	LoadSkill(location string) (*Skill, error)
+
+	// LoadAll loads all available skills from the backend.
+	LoadAll() ([]*Skill, error)
+}
